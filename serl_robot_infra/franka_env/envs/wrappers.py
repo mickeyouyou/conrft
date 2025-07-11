@@ -5,6 +5,7 @@ import numpy as np
 from gymnasium.spaces import Box, Dict
 import copy
 from franka_env.spacemouse.spacemouse_expert import SpaceMouseExpert, JoystickExpert, ControllerType
+from franka_env.spacemouse.keyboard_expert import KeyboardExpert
 import requests
 from scipy.spatial.transform import Rotation as R
 from franka_env.envs.franka_env import FrankaEnv
@@ -673,7 +674,8 @@ class JoystickIntervention(gym.ActionWrapper):
 
         self.action_indices = action_indices
 
-        self.expert = JoystickExpert(controller_type=controller_type)
+        # self.expert = JoystickExpert(controller_type=controller_type)
+        self.expert = KeyboardExpert()
         self.left, self.right = False, False
 
     def action(self, action: np.ndarray) -> np.ndarray:

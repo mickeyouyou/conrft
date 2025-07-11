@@ -6,6 +6,8 @@ import numpy as np
 
 from franka_sim import envs
 
+from franka_env.spacemouse.spacemouse_expert import SpaceMouseExpert, JoystickExpert, ControllerType
+from franka_env.spacemouse.keyboard_expert import KeyboardExpert
 from franka_sim.utils.viewer_utils import DualMujocoViewer
 
 env = envs.PandaPickCubeGymEnv(render_mode="human", action_scale=(0.1, 1))
@@ -16,12 +18,18 @@ def sample():
     a = np.random.uniform(action_spec.low, action_spec.high, action_spec.shape)
     return a.astype(action_spec.dtype)
 
+expert = KeyboardExpert()
+def human_sample():
+    action, buttons = expert.get_action()
+    print(action)
+    return action
 
 m = env.model
 d = env.data
 
 key_reset = False
 KEY_SPACE = 32
+HUMAN_SAMPLE = True
 
 
 def key_callback(keycode):
@@ -44,7 +52,9 @@ with  mujoco.viewer.launch_passive(env.unwrapped.model, env.unwrapped.data, show
             key_reset = False
         else:
             step_start = time.time()
-            env.step(sample())
+            action = sample() if not HUMAN_SAMPLE else human_sample() 
+            print(action)
+            env.step(action)
             viewer.sync()
             time_until_next_step = env.control_dt - (time.time() - step_start)
             if time_until_next_step > 0:
